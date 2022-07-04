@@ -24,10 +24,19 @@ app.get("/api/hello", function (req, res) {
 });
 // date
 app.get("/api/:date?", (req, res) => {
-  const requete = req.params.date;
-  if (isNaN(Date.parse(requete)) && requete.match(/^[0-9]+$/).length === 0) {
+  let requete = req.params.date;
+  if (requete && requete.match(/^[0-9]+$/)) {
+    requete = parseInt(requete);
+  }
+  if (requete === undefined)
+    res.json({ unix: new Date().getTime(), utc: new Date().toUTCString() });
+  else if (new Date(requete) == "Invalid Date") {
     res.json({ error: "Invalid Date" });
-  } else res.json({ unix: requete, utc: new Date().toUTCString() });
+  } else
+    res.json({
+      unix: new Date(requete).getTime(),
+      utc: new Date(requete).toUTCString(),
+    });
 });
 
 // listen for requests :)
